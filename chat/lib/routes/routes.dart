@@ -11,7 +11,7 @@ class CustomRoutes {
     switch (settings.name) {
       case RoutesNames.chat:
         return MaterialPageRoute(
-          builder: (context) => const ChatScreen(),
+          builder: (context) => ChatScreen(),
           settings: settings,
         );
       case RoutesNames.loading:
@@ -31,7 +31,7 @@ class CustomRoutes {
         );
       case RoutesNames.users:
         return MaterialPageRoute(
-          builder: (context) => const UsersScreen(),
+          builder: (context) => UsersScreen(),
           settings: settings,
         );
       default:
