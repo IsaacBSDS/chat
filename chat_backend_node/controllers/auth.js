@@ -1,6 +1,6 @@
 import { response } from "express";
-import mongoose from "mongoose";
 import Users from "../models/users.js";
+import bcrypt from "bcryptjs";
 
 const create_user = async (req, res = response) => {
   try {
@@ -17,6 +17,12 @@ const create_user = async (req, res = response) => {
       name,
     };
     const user = new Users(only_used_fields);
+
+    // encrypt password
+
+    const salt = bcrypt.genSaltSync();
+    user.password = bcrypt.hashSync(password, salt);
+
     await user.save();
     res.json({
       ok: true,
