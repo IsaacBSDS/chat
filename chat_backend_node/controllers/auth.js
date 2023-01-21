@@ -33,6 +33,8 @@ const create_user = async (req, res = response) => {
       token: token,
     });
   } catch (error) {
+    console.log("error create user");
+    console.log(error);
     return res.json({
       ok: false,
       msg_error: "There is a error. Try again later.",
@@ -60,6 +62,10 @@ const login = async (req, res = response) => {
 
     return res.json({ ok: true, user, token });
   } catch (error) {
+    console.log("error login user");
+
+    console.log(error);
+
     return res.status(500).json({
       ok: false,
       msg_error: "There is a error. Try again later.",
@@ -74,6 +80,8 @@ const renew_token = async (req, res) => {
     let user = await Users.findById(uid);
     return res.json({ ok: true, user, token });
   } catch (error) {
+    console.log("error renew user");
+
     console.log(error);
     return res.status(500).json({
       ok: false,
