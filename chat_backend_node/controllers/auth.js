@@ -68,7 +68,18 @@ const login = async (req, res = response) => {
 };
 
 const renew_token = async (req, res) => {
-  return res.json({ ok: true, renew: req.uid });
+  try {
+    const uid = req.uid;
+    const token = await generate_jwt(uid);
+    let user = await Users.findById(uid);
+    return res.json({ ok: true, user, token });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      ok: false,
+      msg_error: "There is a error. Try again later.",
+    });
+  }
 };
 
 export { create_user, login, renew_token };
