@@ -40,4 +40,35 @@ const create_user = async (req, res = response) => {
   }
 };
 
-export { create_user };
+const login = async (req, res = response) => {
+  try {
+    const { username, password } = req.body;
+
+    let user = await Users.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ ok: false, msg: "user is not found" });
+    }
+
+    const validPassword = bcrypt.compareSync(password, user.password);
+
+    if (!validPassword) {
+      return res.status(400).json({ ok: false, msg: "password is wrong" });
+    }
+
+    const token = await generate_jwt(user.id);
+
+    return res.json({ ok: true, user, token });
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      msg_error: "There is a error. Try again later.",
+    });
+  }
+};
+
+const renew_token = async (req, res) => {
+  return res.json({ ok: true, renew: req.uid });
+};
+
+export { create_user, login, renew_token };

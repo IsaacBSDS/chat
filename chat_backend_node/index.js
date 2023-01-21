@@ -1,7 +1,7 @@
 import express from "express";
 import { Server } from "socket.io";
 import dbConnection from "./database/config.js";
-import { router } from "./routes/auth.js";
+import { authRoutes } from "./routes/auth.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -19,7 +19,7 @@ const server = app.listen(app.get("port"), () => {
 
 // Routes
 
-app.use("/api/login", router);
+app.use("/api/login", authRoutes);
 
 //socket conf
 const io = new Server(server);
