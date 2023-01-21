@@ -1,8 +1,9 @@
 import express from "express";
 import { Server } from "socket.io";
 import dbConnection from "./database/config.js";
-import { field_validator } from "./middlewares/field_validator.js";
 import { router } from "./routes/auth.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 dbConnection();
 const app = express();

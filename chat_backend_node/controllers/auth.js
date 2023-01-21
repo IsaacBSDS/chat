@@ -1,6 +1,7 @@
 import { response } from "express";
 import Users from "../models/users.js";
 import bcrypt from "bcryptjs";
+import generate_jwt from "../helpers/jwt.js";
 
 const create_user = async (req, res = response) => {
   try {
@@ -19,14 +20,17 @@ const create_user = async (req, res = response) => {
     const user = new Users(only_used_fields);
 
     // encrypt password
-
     const salt = bcrypt.genSaltSync();
     user.password = bcrypt.hashSync(password, salt);
-
     await user.save();
+
+    // generate JWT
+    const token = await generate_jwt(user.id);
+
     res.json({
       ok: true,
-      msg: user,
+      user: user,
+      token: token,
     });
   } catch (error) {
     return res.json({
