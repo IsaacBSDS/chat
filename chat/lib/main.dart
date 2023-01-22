@@ -37,8 +37,9 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MediaQuery(
             data: MediaQuery.of(context).copyWith(
-                textScaleFactor:
-                    MediaQuery.of(context).textScaleFactor.clamp(0.9, 1.4)),
+              textScaleFactor:
+                  MediaQuery.of(context).textScaleFactor.clamp(0.9, 1.4),
+            ),
             child: child!);
       },
       theme: ThemeData(iconTheme: IconThemeData(color: CustomColors.purple)),

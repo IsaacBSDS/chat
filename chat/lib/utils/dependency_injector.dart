@@ -1,6 +1,8 @@
 import 'package:chat/controllers/login.dart';
+import 'package:chat/controllers/register.dart';
 import 'package:chat/data/repository/user.dart';
 import 'package:chat/data/uses_cases/login.dart';
+import 'package:chat/data/uses_cases/register.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -12,6 +14,13 @@ class DependencyInjector {
           repository: UserRepository(),
         ),
       ),
-    )
+    ),
+    ChangeNotifierProvider(
+      create: (_) => RegisterController(
+        registerUseCase: RegisterUseCase(
+          repository: UserRepository(),
+        ),
+      ),
+    ),
   ];
 }

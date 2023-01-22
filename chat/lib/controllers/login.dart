@@ -1,5 +1,7 @@
 import 'package:chat/data/uses_cases/login.dart';
 import 'package:chat/models/login_response.dart';
+import 'package:chat/utils/constanst.dart';
+import 'package:chat/utils/local_storage.dart';
 import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +20,7 @@ class LoginController extends ChangeNotifier {
         password: passwordController.text,
       ));
       Session.instance.start(loginResponse);
+      LocalStorage.save(Constants.token, loginResponse.toString());
       return true;
     } catch (e) {
       rethrow;

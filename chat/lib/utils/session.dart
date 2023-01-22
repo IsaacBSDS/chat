@@ -1,4 +1,6 @@
 import 'package:chat/models/login_response.dart';
+import 'package:chat/utils/constanst.dart';
+import 'package:chat/utils/local_storage.dart';
 
 class Session {
   Session._();
@@ -9,5 +11,10 @@ class Session {
 
   start(LoginResponse loginResponse) {
     this.loginResponse = loginResponse;
+  }
+
+  stop() {
+    loginResponse = LoginResponse();
+    LocalStorage.delete(Constants.token);
   }
 }

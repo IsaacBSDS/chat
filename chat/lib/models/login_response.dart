@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chat/models/users.dart';
 
 class LoginResponse {
@@ -22,4 +24,9 @@ class LoginResponse {
         "user": user?.toJson(),
         "token": token,
       };
+
+  @override
+  String toString() {
+    return json.encode(toJson());
+  }
 }

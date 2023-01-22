@@ -32,6 +32,7 @@ class UsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Responsive responsive = Responsive.of(context);
     return Scaffold(
       backgroundColor: CustomColors.weakGrey,
       appBar: AppBar(
@@ -40,6 +41,8 @@ class UsersScreen extends StatelessWidget {
         title: CustomText(
           text: Session.instance.loginResponse.user!.name,
           color: CustomColors.purple,
+          fontSize: responsive.dp(2.2),
+          fontWeight: FontWeight.w600,
         ),
         leading: const IconButton(
           onPressed: null,
@@ -50,7 +53,13 @@ class UsersScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Session.instance.stop();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                RoutesNames.login,
+                (route) => false,
+              );
+            },
             icon: const Icon(
               Icons.exit_to_app,
             ),

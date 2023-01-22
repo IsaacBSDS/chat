@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:chat/data/repository/user.dart';
 import 'package:chat/data/uses_cases/base.dart';
@@ -21,8 +20,6 @@ class LoginUseCase extends UseCase<LoginResponse, LoginUseCaseParams> {
   Future<LoginResponse> call({required LoginUseCaseParams params}) async {
     final http.Response response = await (repository as UserRepository)
         .login(params.username, params.password);
-    log(response.statusCode.toString());
-    log(response.body.toString());
     switch (response.statusCode) {
       case 200:
         return LoginResponse.fromJson(
@@ -35,7 +32,7 @@ class LoginUseCase extends UseCase<LoginResponse, LoginUseCaseParams> {
       case 404:
         throw UseCaseException("Usuario no encontrado");
       default:
-        throw UseCaseException("");
+        throw UseCaseException("Hubo un error.\nIntente de nuevo más tarde.");
     }
   }
 }

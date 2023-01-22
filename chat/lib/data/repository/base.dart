@@ -9,26 +9,24 @@ abstract class Api {
   final Session session = Session.instance;
 
   Map<String, String> get headers => _buildHeaders();
-  Map<String, String> get headersWithoutAuth => _buildHeadersWithoutAuth();
-
-  Map<String, String> _buildHeadersWithoutAuth() {
-    final Map<String, String> headers = {"x-api-key": dotenv.get("x-api-key")};
-
-    return headers;
-  }
 
   Map<String, String> _buildHeaders() {
-    // if (session.userToken != null) {
-    //   headers.addAll({"Authorization": "Bearer ${session.userToken!.access}"});
-    // }
+    final Map<String, String> headers = {"Content-type": "application/json"};
+
+    if (session.loginResponse.token != null) {
+      headers.addAll(
+        {"Authorization": "Bearer ${session.loginResponse.token}"},
+      );
+    } else {
+      if (headers.containsKey("Authorization")) {
+        headers.remove("Authorization");
+      }
+    }
     return headers;
   }
 
   Future<http.Response> get(String path, {bool? useAuth = true}) {
-    return http
-        .get(Uri.parse("$apiUrl$path"),
-            headers: useAuth! ? headers : headersWithoutAuth)
-        .timeout(
+    return http.get(Uri.parse("$apiUrl$path")).timeout(
       const Duration(seconds: 10),
       onTimeout: () {
         return http.Response('', 408);
@@ -36,16 +34,17 @@ abstract class Api {
     );
   }
 
-  Future<http.Response> post(String path, Map<String, dynamic> body,
-      {bool? useAuth = true}) {
-    return http.post(Uri.parse("$apiUrl$path"),
-        body: jsonEncode(body), headers: {"Content-type": "application/json"});
+  Future<http.Response> post(String path, Map<String, dynamic> body) {
+    return http.post(
+      Uri.parse("$apiUrl$path"),
+      body: jsonEncode(body),
+      headers: headers,
+    );
   }
 
   Future<http.Response> put(String path, Map<String, dynamic> body,
       {bool? useAuth = true}) {
-    return http.put(Uri.parse("$apiUrl$path"),
-        body: body, headers: useAuth! ? headers : headersWithoutAuth);
+    return http.put(Uri.parse("$apiUrl$path"));
   }
 }
 
