@@ -26,7 +26,7 @@ abstract class Api {
   }
 
   Future<http.Response> get(String path, {bool? useAuth = true}) {
-    return http.get(Uri.parse("$apiUrl$path")).timeout(
+    return http.get(Uri.parse("$apiUrl$path"), headers: headers).timeout(
       const Duration(seconds: 10),
       onTimeout: () {
         return http.Response('', 408);

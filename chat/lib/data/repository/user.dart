@@ -14,4 +14,9 @@ class UserRepository extends Repository {
         {"username": username, "password": password, "name": name});
     return response;
   }
+
+  Future<http.Response> renewToken(String token) async {
+    final http.Response response = await get("/login/renew");
+    return response;
+  }
 }

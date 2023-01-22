@@ -1,8 +1,8 @@
 import 'package:chat/ui/routes/names.dart';
 import 'package:chat/ui/screens/chat.dart';
-import 'package:chat/ui/screens/loading.dart';
 import 'package:chat/ui/screens/login.dart';
 import 'package:chat/ui/screens/register.dart';
+import 'package:chat/ui/screens/splash.dart';
 import 'package:chat/ui/screens/users.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class CustomRoutes {
         );
       case RoutesNames.loading:
         return MaterialPageRoute(
-          builder: (context) => const LoadingScreen(),
+          builder: (context) => const SplashScreen(),
           settings: settings,
         );
       case RoutesNames.login:

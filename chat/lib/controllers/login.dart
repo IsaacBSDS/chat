@@ -21,6 +21,8 @@ class LoginController extends ChangeNotifier {
       ));
       Session.instance.start(loginResponse);
       LocalStorage.save(Constants.token, loginResponse.toString());
+      usernameController.clear();
+      passwordController.clear();
       return true;
     } catch (e) {
       rethrow;

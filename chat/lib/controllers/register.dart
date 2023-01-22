@@ -19,6 +19,9 @@ class RegisterController extends ChangeNotifier {
           name: nameController.text,
         ),
       );
+      usernameController.clear();
+      passwordController.clear();
+      nameController.clear();
       return true;
     } catch (e) {
       rethrow;

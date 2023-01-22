@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chat/ui/routes/routes.dart';
-import 'package:chat/ui/screens/login.dart';
+import 'package:chat/ui/screens/splash.dart';
 import 'package:chat/ui/theme/colors.dart';
 import 'package:chat/utils/dependency_injector.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: CustomRoutes.routes,
       debugShowCheckedModeBanner: false,
       title: 'Chat',
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }
