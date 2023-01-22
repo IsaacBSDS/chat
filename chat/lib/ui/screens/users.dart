@@ -1,8 +1,9 @@
 import 'package:chat/models/users.dart';
-import 'package:chat/routes/names.dart';
-import 'package:chat/theme/colors.dart';
+import 'package:chat/ui/routes/names.dart';
+import 'package:chat/ui/theme/colors.dart';
+import 'package:chat/ui/widgets/custom_text.dart';
 import 'package:chat/utils/responsive.dart';
-import 'package:chat/widgets/custom_text.dart';
+import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
 
 class UsersScreen extends StatelessWidget {
@@ -13,19 +14,19 @@ class UsersScreen extends StatelessWidget {
       online: true,
       username: "Sac Nara",
       name: "Isaac Daniel",
-      uuid: "1a",
+      uid: "1a",
     ),
     UserModel(
       online: false,
       username: "Sac Boop",
       name: "Isaac Benavides",
-      uuid: "2a",
+      uid: "2a",
     ),
     UserModel(
       online: true,
       username: "Isaac",
       name: "Isaac",
-      uuid: "3a",
+      uid: "3a",
     ),
   ];
 
@@ -37,7 +38,7 @@ class UsersScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
         title: CustomText(
-          text: "Aqui va mi nombre",
+          text: Session.instance.loginResponse.user!.name,
           color: CustomColors.purple,
         ),
         leading: const IconButton(

@@ -1,6 +1,6 @@
-import 'package:chat/theme/colors.dart';
+import 'package:chat/ui/theme/colors.dart';
+import 'package:chat/ui/widgets/custom_text.dart';
 import 'package:chat/utils/responsive.dart';
-import 'package:chat/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {

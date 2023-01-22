@@ -1,12 +1,17 @@
 import 'dart:io';
 
-import 'package:chat/routes/routes.dart';
-import 'package:chat/screens/users.dart';
+import 'package:chat/ui/routes/routes.dart';
+import 'package:chat/ui/screens/login.dart';
+import 'package:chat/ui/theme/colors.dart';
+import 'package:chat/utils/dependency_injector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   if (Platform.isIOS || Platform.isAndroid) {
     SystemChrome.setPreferredOrientations(
       [
@@ -15,7 +20,12 @@ void main() {
       ],
     );
   }
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: DependencyInjector.providers,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -31,10 +41,11 @@ class MyApp extends StatelessWidget {
                     MediaQuery.of(context).textScaleFactor.clamp(0.9, 1.4)),
             child: child!);
       },
+      theme: ThemeData(iconTheme: IconThemeData(color: CustomColors.purple)),
       onGenerateRoute: CustomRoutes.routes,
       debugShowCheckedModeBanner: false,
       title: 'Chat',
-      home: UsersScreen(),
+      home: const LoginScreen(),
     );
   }
 }

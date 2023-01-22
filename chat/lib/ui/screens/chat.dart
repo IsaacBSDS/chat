@@ -1,11 +1,11 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:chat/models/users.dart';
-import 'package:chat/theme/colors.dart';
+import 'package:chat/ui/theme/colors.dart';
+import 'package:chat/ui/widgets/custom_text.dart';
+import 'package:chat/ui/widgets/custom_text_form_field.dart';
+import 'package:chat/ui/widgets/message_bubble.dart';
 import 'package:chat/utils/responsive.dart';
-import 'package:chat/widgets/custom_text.dart';
-import 'package:chat/widgets/custom_text_form_field.dart';
-import 'package:chat/widgets/message_bubble.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {

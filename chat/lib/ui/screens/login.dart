@@ -1,17 +1,45 @@
-import 'package:chat/routes/names.dart';
-import 'package:chat/theme/colors.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:developer';
+
+import 'package:chat/controllers/login.dart';
+import 'package:chat/data/uses_cases/base.dart';
+import 'package:chat/ui/routes/names.dart';
+import 'package:chat/ui/theme/colors.dart';
+import 'package:chat/ui/widgets/custom_button.dart';
+import 'package:chat/ui/widgets/custom_text.dart';
+import 'package:chat/ui/widgets/custom_text_form_field.dart';
+import 'package:chat/ui/widgets/loader.dart';
+import 'package:chat/ui/widgets/modal.dart';
 import 'package:chat/utils/responsive.dart';
-import 'package:chat/widgets/custom_button.dart';
-import 'package:chat/widgets/custom_text.dart';
-import 'package:chat/widgets/custom_text_form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
+  _login(BuildContext context) async {
+    final LoginController loginController = context.read();
+    openLoader(context);
+    try {
+      final bool response = await loginController.login();
+      if (response) {
+        Navigator.of(context).pushNamed(RoutesNames.users);
+      }
+    } on UseCaseException catch (e) {
+      closeLoader(context);
+      openError(context, e.message);
+    } catch (e, s) {
+      log(e.toString(), stackTrace: s);
+      closeLoader(context);
+      openError(context, "Hubo un error.\nIntente de nuevo más tarde.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Responsive responsive = Responsive.of(context);
+    final LoginController loginController = context.watch();
     return Scaffold(
       backgroundColor: CustomColors.weakGrey,
       body: SafeArea(
@@ -36,22 +64,30 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: responsive.hp(10)),
                 _TextFormFieldShadow(
                   child: CustomTextFormField(
+                    iconColor: CustomColors.purple,
+                    controller: loginController.usernameController,
                     hintText: "username",
+                    maxLines: 1,
                     prefixIcon: Icon(
                       Icons.person_outline,
                       size: responsive.dp(2),
+                      color: CustomColors.purple,
                     ),
                   ),
                 ),
                 SizedBox(height: responsive.hp(2)),
                 _TextFormFieldShadow(
                   child: CustomTextFormField(
+                    textInputType: TextInputType.visiblePassword,
+                    iconColor: CustomColors.purple,
+                    controller: loginController.passwordController,
                     hintText: "password",
                     obscureText: true,
                     maxLines: 1,
                     prefixIcon: Icon(
                       Icons.lock_outline,
                       size: responsive.dp(2),
+                      color: CustomColors.purple,
                     ),
                   ),
                 ),
@@ -66,7 +102,7 @@ class LoginScreen extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       fontSize: responsive.dp(2),
                     ),
-                    onTap: () {},
+                    onTap: () => _login(context),
                   ),
                 ),
                 SizedBox(height: responsive.hp(10)),

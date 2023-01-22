@@ -1,9 +1,9 @@
-import 'package:chat/routes/names.dart';
-import 'package:chat/screens/chat.dart';
-import 'package:chat/screens/loading.dart';
-import 'package:chat/screens/login.dart';
-import 'package:chat/screens/register.dart';
-import 'package:chat/screens/users.dart';
+import 'package:chat/ui/routes/names.dart';
+import 'package:chat/ui/screens/chat.dart';
+import 'package:chat/ui/screens/loading.dart';
+import 'package:chat/ui/screens/login.dart';
+import 'package:chat/ui/screens/register.dart';
+import 'package:chat/ui/screens/users.dart';
 import 'package:flutter/material.dart';
 
 class CustomRoutes {
@@ -11,7 +11,7 @@ class CustomRoutes {
     switch (settings.name) {
       case RoutesNames.chat:
         return MaterialPageRoute(
-          builder: (context) => ChatScreen(),
+          builder: (context) => const ChatScreen(),
           settings: settings,
         );
       case RoutesNames.loading:
