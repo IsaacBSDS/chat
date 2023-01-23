@@ -3,22 +3,30 @@ import { Server } from "socket.io";
 import dbConnection from "./database/config.js";
 import { authRoutes } from "./routes/auth.js";
 import dotenv from "dotenv";
+import path from "path";
+import * as url from "url";
+import { createServer } from "http";
 dotenv.config();
 
 dbConnection();
+
 const app = express();
 
 app.set("port", process.env.PORT || 3000);
 
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+
+const static_path = path.join(__dirname, "public");
+
+// statics files
+app.use(express.static(static_path));
+
 app.use(express.json());
 
 //server
-const server = app.listen(app.get("port"), () => {
-  console.log("server on port:", app.get("port"));
-});
+const server = createServer(app);
 
 // Routes
-
 app.use("/api/login", authRoutes);
 
 //socket conf
@@ -27,4 +35,12 @@ const io = new Server(server);
 //WebSocket
 io.on("connection", (socket) => {
   console.log("new connection");
+  socket.on("disconnect", () => {
+    console.log("Disconnected");
+  });
+});
+
+server.listen(app.get("port") || 3000, (err) => {
+  if (err) throw new Error(err);
+  console.log("Servidor corriendo en puerto", app.get("port"));
 });
