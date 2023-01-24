@@ -19,7 +19,7 @@ message.addEventListener("keypress", () => {
   socket.emit("chat:typing", username.value);
 });
 
-socket.on("chat:message", (data) => {
+socket.socket.on("chat:message", (data) => {
   actions.innerHTML = "";
   output.innerHTML += `
     <p>

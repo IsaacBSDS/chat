@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import path from "path";
 import * as url from "url";
 import { createServer } from "http";
+import cors from "cors";
 dotenv.config();
 
 dbConnection();
@@ -22,6 +23,12 @@ const static_path = path.join(__dirname, "public");
 app.use(express.static(static_path));
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 //server
 const server = createServer(app);
@@ -40,7 +47,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(app.get("port") || 3000, (err) => {
+server.listen(app.get("port"), (err) => {
   if (err) throw new Error(err);
   console.log("Servidor corriendo en puerto", app.get("port"));
 });
