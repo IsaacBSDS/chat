@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:chat/controllers/socket.dart';
 import 'package:chat/controllers/splash.dart';
 import 'package:chat/ui/routes/names.dart';
 import 'package:chat/ui/theme/colors.dart';
@@ -29,8 +30,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    final SocketService socketService = context.read();
     _checkIsAuthenticated(context).then((value) {
       if (value) {
+        socketService.connect();
         Navigator.of(context)
             .pushNamedAndRemoveUntil(RoutesNames.users, (route) => false);
       } else {

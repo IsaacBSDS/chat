@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:chat/data/uses_cases/renew_token.dart';
 import 'package:chat/models/login_response.dart';
@@ -26,6 +27,7 @@ class SplashController extends ChangeNotifier {
       }
       return false;
     } catch (e) {
+      log(e.toString());
       LocalStorage.delete(Constants.token);
       rethrow;
     }

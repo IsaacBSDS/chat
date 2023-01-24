@@ -44,6 +44,7 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final Responsive responsive = Responsive.of(context);
     final RegisterController registerController = context.watch();
+
     return Scaffold(
       backgroundColor: CustomColors.weakGrey,
       body: SafeArea(

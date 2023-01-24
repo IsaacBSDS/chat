@@ -1,5 +1,6 @@
 import 'package:chat/controllers/login.dart';
 import 'package:chat/controllers/register.dart';
+import 'package:chat/controllers/socket.dart';
 import 'package:chat/controllers/splash.dart';
 import 'package:chat/data/repository/user.dart';
 import 'package:chat/data/uses_cases/login.dart';
@@ -30,6 +31,9 @@ class DependencyInjector {
           repository: UserRepository(),
         ),
       ),
+    ),
+    ChangeNotifierProvider(
+      create: (_) => SocketService(),
     ),
   ];
 }

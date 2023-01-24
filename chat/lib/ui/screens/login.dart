@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:chat/controllers/login.dart';
+import 'package:chat/controllers/socket.dart';
 import 'package:chat/data/uses_cases/base.dart';
 import 'package:chat/ui/routes/names.dart';
 import 'package:chat/ui/theme/colors.dart';
@@ -20,10 +21,12 @@ class LoginScreen extends StatelessWidget {
 
   _login(BuildContext context) async {
     final LoginController loginController = context.read();
+    final SocketService socketService = context.read();
     openLoader(context);
     try {
-      final bool response = await loginController.login();
-      if (response) {
+      final bool isLogged = await loginController.login();
+      socketService.connect();
+      if (isLogged) {
         Navigator.of(context).pushNamedAndRemoveUntil(
           RoutesNames.users,
           (route) => false,

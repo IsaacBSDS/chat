@@ -1,3 +1,4 @@
+import 'package:chat/controllers/socket.dart';
 import 'package:chat/models/users.dart';
 import 'package:chat/ui/routes/names.dart';
 import 'package:chat/ui/theme/colors.dart';
@@ -5,6 +6,7 @@ import 'package:chat/ui/widgets/custom_text.dart';
 import 'package:chat/utils/responsive.dart';
 import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UsersScreen extends StatelessWidget {
   UsersScreen({super.key});
@@ -33,27 +35,33 @@ class UsersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Responsive responsive = Responsive.of(context);
+    final SocketService socketService = context.watch();
     return Scaffold(
       backgroundColor: CustomColors.weakGrey,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         title: CustomText(
-          text: Session.instance.loginResponse.user!.name,
+          text: Session.instance.loginResponse.user?.name ?? "",
           color: CustomColors.purple,
           fontSize: responsive.dp(2.2),
           fontWeight: FontWeight.w600,
         ),
-        leading: const IconButton(
+        leading: IconButton(
           onPressed: null,
           icon: Icon(
-            Icons.check_circle,
-            color: Colors.green,
+            socketService.serverStatus != ServerStatus.online
+                ? Icons.offline_bolt
+                : Icons.check_circle,
+            color: socketService.serverStatus != ServerStatus.online
+                ? Colors.red
+                : Colors.green,
           ),
         ),
         actions: [
           IconButton(
             onPressed: () {
+              socketService.disconnect();
               Session.instance.stop();
               Navigator.of(context).pushNamedAndRemoveUntil(
                 RoutesNames.login,
