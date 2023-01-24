@@ -21,8 +21,9 @@ const generate_jwt = (uid) => {
   });
 };
 
-const validate_token = (token = "") => {
+const validate_token = (no_parsed_token = "") => {
   try {
+    const token = no_parsed_token.replace("Bearer ", "");
     const { uid } = jwt.verify(token, process.env.JWT_secret_word);
     return [true, uid];
   } catch (error) {

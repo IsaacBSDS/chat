@@ -8,6 +8,7 @@ import * as url from "url";
 import { createServer } from "http";
 import cors from "cors";
 import { validate_token } from "./helpers/jwt.js";
+import handle_online_status_of_user from "./controllers/socket.js";
 dotenv.config();
 
 dbConnection();
@@ -43,14 +44,18 @@ const io = new Server(server);
 //WebSocket
 io.on("connection", (socket) => {
   console.log("New Connection");
-  const no_parsed_token = socket.handshake.headers["authorization"];
-  const token = no_parsed_token.replace("Bearer ", "");
-  const [valid, uid] = validate_token(token);
+  const [valid, uid] = validate_token(
+    socket.handshake.headers["authorization"]
+  );
   if (!valid) {
     return socket.disconnect();
   }
   console.log("Client Authenticated");
+
+  handle_online_status_of_user(uid, true);
+
   socket.on("disconnect", () => {
+    handle_online_status_of_user(uid, false);
     console.log("Disconnected");
   });
 });
