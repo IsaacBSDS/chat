@@ -7,6 +7,7 @@ import path from "path";
 import * as url from "url";
 import { createServer } from "http";
 import cors from "cors";
+import { validate_token } from "./helpers/jwt.js";
 dotenv.config();
 
 dbConnection();
@@ -41,7 +42,14 @@ const io = new Server(server);
 
 //WebSocket
 io.on("connection", (socket) => {
-  console.log("new connection");
+  console.log("New Connection");
+  const no_parsed_token = socket.handshake.headers["authorization"];
+  const token = no_parsed_token.replace("Bearer ", "");
+  const [valid, uid] = validate_token(token);
+  if (!valid) {
+    return socket.disconnect();
+  }
+  console.log("Client Authenticated");
   socket.on("disconnect", () => {
     console.log("Disconnected");
   });

@@ -21,4 +21,14 @@ const generate_jwt = (uid) => {
   });
 };
 
+const validate_token = (token = "") => {
+  try {
+    const { uid } = jwt.verify(token, process.env.JWT_secret_word);
+    return [true, uid];
+  } catch (error) {
+    return [false, null];
+  }
+};
+
 export default generate_jwt;
+export { validate_token };
