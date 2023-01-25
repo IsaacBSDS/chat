@@ -24,10 +24,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController controller = TextEditingController();
 
   final List<MessageBubble> _messages = [];
-  String to = "";
+  String from = "";
 
   dynamic listenMessage(dynamic data) {
-    to = data["to"];
+    from = data["from"];
     _messages.add(
       MessageBubble(
         text: data["message"],
@@ -103,8 +103,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     bottom: r.hp(1),
                   ),
                   reverse: true,
-                  itemCount: to == user.uid ? _messages.length : 0,
-                  itemBuilder: (context, index) => to == user.uid
+                  itemCount: from == user.uid ? _messages.length : 0,
+                  itemBuilder: (context, index) => from == user.uid
                       ? _messages.reversed.toList()[index]
                       : SizedBox.fromSize(),
                 ),
