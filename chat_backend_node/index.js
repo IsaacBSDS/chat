@@ -58,6 +58,14 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("user_connect", JSON.stringify(value))
   );
 
+  // add user to room
+  socket.join(uid);
+
+  // listen message
+  socket.on("message", (payload) => {
+    io.to(payload.to).emit("message", payload);
+  });
+
   socket.on("disconnect", () => {
     handle_online_status_of_user(uid, false).then((value) =>
       socket.broadcast.emit("user_connect", JSON.stringify(value))
