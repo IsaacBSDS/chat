@@ -8,8 +8,11 @@ import * as url from "url";
 import { createServer } from "http";
 import cors from "cors";
 import { validate_token } from "./helpers/jwt.js";
-import handle_online_status_of_user from "./controllers/socket.js";
+import handle_online_status_of_user, {
+  save_message,
+} from "./controllers/socket.js";
 import { usersRoutes } from "./routes/users.js";
+import { messageRouter } from "./routes/messages.js";
 dotenv.config();
 
 dbConnection();
@@ -39,6 +42,7 @@ const server = createServer(app);
 // Routes
 app.use("/api/login", authRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/messages", messageRouter);
 
 //socket conf
 const io = new Server(server);
@@ -62,7 +66,8 @@ io.on("connection", (socket) => {
   socket.join(uid);
 
   // listen message
-  socket.on("message", (payload) => {
+  socket.on("message", async (payload) => {
+    await save_message(payload);
     io.to(payload.to).emit("message", payload);
   });
 
