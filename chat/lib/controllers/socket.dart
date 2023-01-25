@@ -15,6 +15,7 @@ class SocketService with ChangeNotifier {
 
   Socket? get socket => _socket;
   Function get emit => _socket.emit;
+  Function get on => _socket.on;
 
   void connect() async {
     log("connecting", name: "Socket");
@@ -38,8 +39,6 @@ class SocketService with ChangeNotifier {
       notifyListeners();
       log("Connected", name: "Socket");
     });
-
-    _socket.on("user_connect", (data) => log(data.toString()));
   }
 
   void disconnect() {

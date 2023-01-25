@@ -20,8 +20,7 @@ class SplashController extends ChangeNotifier {
         final LoginResponse localToken =
             LoginResponse.fromJson(json.decode(noParsedToken));
         Session.instance.start(localToken);
-        final LoginResponse renewResponse = await renewTokenUseCase.call(
-            params: RenewTokenUseCaseParams(token: localToken.token!));
+        final LoginResponse renewResponse = await renewTokenUseCase.call();
         Session.instance.start(renewResponse);
         return true;
       }

@@ -10,6 +10,8 @@ abstract class UseCase<Type, Params> {
 }
 
 abstract class UseCaseNoParams<Type> {
+  final Repository? repository;
+  UseCaseNoParams({this.repository});
   Future<Type> call();
 }
 

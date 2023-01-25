@@ -1,41 +1,67 @@
+import 'dart:convert';
+
 import 'package:chat/controllers/socket.dart';
+import 'package:chat/controllers/users.dart';
+import 'package:chat/data/uses_cases/base.dart';
 import 'package:chat/models/users.dart';
 import 'package:chat/ui/routes/names.dart';
 import 'package:chat/ui/theme/colors.dart';
 import 'package:chat/ui/widgets/custom_text.dart';
+import 'package:chat/ui/widgets/loader.dart';
+import 'package:chat/ui/widgets/modal.dart';
 import 'package:chat/utils/responsive.dart';
 import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class UsersScreen extends StatelessWidget {
-  UsersScreen({super.key});
+class UsersScreen extends StatefulWidget {
+  const UsersScreen({super.key});
 
-  final List<UserModel> users = [
-    UserModel(
-      online: true,
-      username: "Sac Nara",
-      name: "Isaac Daniel",
-      uid: "1a",
-    ),
-    UserModel(
-      online: false,
-      username: "Sac Boop",
-      name: "Isaac Benavides",
-      uid: "2a",
-    ),
-    UserModel(
-      online: true,
-      username: "Isaac",
-      name: "Isaac",
-      uid: "3a",
-    ),
-  ];
+  @override
+  State<UsersScreen> createState() => _UsersScreenState();
+}
+
+class _UsersScreenState extends State<UsersScreen> {
+  _listAllUsers(BuildContext context) async {
+    final UsersController usersController = context.read();
+    openLoader(context);
+    try {
+      await usersController.listAllUsers();
+      if (!mounted) return;
+      closeLoader(context);
+    } on UseCaseException catch (e) {
+      closeLoader(context);
+      openError(context, e.message);
+    } catch (e) {
+      closeLoader(context);
+      openError(context, "Hubo un error.\nIntente de nuevo más tarde.");
+    }
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _listAllUsers(context);
+      final SocketService socketService = context.read();
+      final UsersController usersController = context.read();
+      socketService.on(
+        "user_connect",
+        (data) => usersController.updateUsersList(
+          UserModel.fromJson(
+            json.decode(data),
+          ),
+        ),
+      );
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final Responsive responsive = Responsive.of(context);
     final SocketService socketService = context.watch();
+    final UsersController usersController = context.watch();
     return Scaffold(
       backgroundColor: CustomColors.weakGrey,
       appBar: AppBar(
@@ -75,7 +101,23 @@ class UsersScreen extends StatelessWidget {
           )
         ],
       ),
-      body: UsersList(users: users),
+      body: usersController.isUsersListNotEmpty
+          ? UsersList(users: usersController.usersListResponse.users!)
+          : EmptyUsers(),
+    );
+  }
+}
+
+class EmptyUsers extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Responsive r = Responsive.of(context);
+    return Center(
+      child: CustomText(
+        text: "No hay usuarios :)",
+        fontWeight: FontWeight.w600,
+        fontSize: r.dp(2),
+      ),
     );
   }
 }
