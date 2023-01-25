@@ -1,6 +1,11 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:developer';
+
+import 'package:chat/controllers/chat.dart';
 import 'package:chat/controllers/socket.dart';
+import 'package:chat/data/uses_cases/base.dart';
+import 'package:chat/models/messages_response.dart';
 import 'package:chat/models/users.dart';
 import 'package:chat/ui/theme/colors.dart';
 import 'package:chat/ui/widgets/custom_text.dart';
@@ -23,7 +28,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   final TextEditingController controller = TextEditingController();
 
-  final List<MessageBubble> _messages = [];
+  List<MessageBubble> _messages = [];
   String from = "";
 
   dynamic listenMessage(dynamic data) {
@@ -39,9 +44,33 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
   }
 
+  _loadHistory(String from, BuildContext context) async {
+    final ChatController chatController = context.read();
+    try {
+      final List<Message>? listMessages =
+          await chatController.listAllMessages(from);
+      if (listMessages != null && listMessages.isNotEmpty) {
+        final List<MessageBubble> receivedMessages = listMessages.map((e) {
+          return MessageBubble(text: e.message!, uid: e.from!);
+        }).toList();
+        setState(() {
+          this.from = from;
+          _messages = receivedMessages;
+        });
+      }
+    } on UseCaseException catch (e) {
+      log(e.message.toString());
+    }
+  }
+
   @override
   void initState() {
     final SocketService socketService = context.read();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final UserModel user =
+          ModalRoute.of(context)!.settings.arguments as UserModel;
+      _loadHistory(user.uid, context);
+    });
     socketService.on("message", (data) => listenMessage(data));
     super.initState();
   }
@@ -120,6 +149,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     uid: Session.instance.loginResponse.user!.uid,
                   ),
                 );
+                from = user.uid;
                 setState(() {});
                 // mandar mensaje
                 socketService.emit("message", {

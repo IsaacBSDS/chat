@@ -4,8 +4,10 @@ import 'package:chat/controllers/register.dart';
 import 'package:chat/controllers/socket.dart';
 import 'package:chat/controllers/splash.dart';
 import 'package:chat/controllers/users.dart';
+import 'package:chat/data/repository/messages.dart';
 import 'package:chat/data/repository/user.dart';
 import 'package:chat/data/uses_cases/login.dart';
+import 'package:chat/data/uses_cases/messages.dart';
 import 'package:chat/data/uses_cases/register.dart';
 import 'package:chat/data/uses_cases/renew_token.dart';
 import 'package:chat/data/uses_cases/users_list.dart';
@@ -45,7 +47,11 @@ class DependencyInjector {
       )),
     ),
     ChangeNotifierProvider(
-      create: (_) => ChatController(),
+      create: (_) => ChatController(
+        messagesListUseCase: MessagesListUseCase(
+          repository: MessageRepository(),
+        ),
+      ),
     ),
   ];
 }
