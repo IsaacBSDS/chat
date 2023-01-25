@@ -14,9 +14,9 @@ class RegisterController extends ChangeNotifier {
     try {
       await registerUseCase.call(
         params: RegisterUseCaseParams(
-          username: usernameController.text,
-          password: passwordController.text,
-          name: nameController.text,
+          username: usernameController.text.trim(),
+          password: passwordController.text.trim(),
+          name: nameController.text.trim(),
         ),
       );
       usernameController.clear();

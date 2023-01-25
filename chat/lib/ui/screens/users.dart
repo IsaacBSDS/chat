@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:chat/controllers/socket.dart';
@@ -102,13 +104,15 @@ class _UsersScreenState extends State<UsersScreen> {
         ],
       ),
       body: usersController.isUsersListNotEmpty
-          ? UsersList(users: usersController.usersListResponse.users!)
-          : EmptyUsers(),
+          ? const UsersList()
+          : const EmptyUsers(),
     );
   }
 }
 
 class EmptyUsers extends StatelessWidget {
+  const EmptyUsers({super.key});
+
   @override
   Widget build(BuildContext context) {
     final Responsive r = Responsive.of(context);
@@ -125,18 +129,32 @@ class EmptyUsers extends StatelessWidget {
 class UsersList extends StatelessWidget {
   const UsersList({
     Key? key,
-    required this.users,
   }) : super(key: key);
 
-  final List<UserModel> users;
+  _listAllUsers(BuildContext context) async {
+    final UsersController usersController = context.read();
+    openLoader(context);
+    try {
+      await usersController.listAllUsers();
+      closeLoader(context);
+    } on UseCaseException catch (e) {
+      closeLoader(context);
+      openError(context, e.message);
+    } catch (e) {
+      closeLoader(context);
+      openError(context, "Hubo un error.\nIntente de nuevo más tarde.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final Responsive r = Responsive.of(context);
+    final UsersController usersController = context.watch();
 
+    final List<UserModel> users = usersController.usersListResponse.users!;
     return RefreshIndicator(
       color: CustomColors.purple,
-      onRefresh: () async {},
+      onRefresh: () async => _listAllUsers(context),
       child: ListView.separated(
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),

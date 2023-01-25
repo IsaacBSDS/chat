@@ -16,8 +16,8 @@ class LoginController extends ChangeNotifier {
     try {
       final LoginResponse loginResponse = await loginUseCase.call(
           params: LoginUseCaseParams(
-        username: usernameController.text,
-        password: passwordController.text,
+        username: usernameController.text.trim(),
+        password: passwordController.text.trim(),
       ));
       Session.instance.start(loginResponse);
       LocalStorage.save(Constants.token, loginResponse.toString());

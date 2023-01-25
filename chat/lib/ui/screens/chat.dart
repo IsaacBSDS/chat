@@ -1,12 +1,15 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:chat/controllers/socket.dart';
 import 'package:chat/models/users.dart';
 import 'package:chat/ui/theme/colors.dart';
 import 'package:chat/ui/widgets/custom_text.dart';
 import 'package:chat/ui/widgets/custom_text_form_field.dart';
 import 'package:chat/ui/widgets/message_bubble.dart';
 import 'package:chat/utils/responsive.dart';
+import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -21,18 +24,37 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController controller = TextEditingController();
 
   final List<MessageBubble> _messages = [];
+  String to = "";
+
+  dynamic listenMessage(dynamic data) {
+    to = data["to"];
+    _messages.add(
+      MessageBubble(
+        text: data["message"],
+        uid: data["from"],
+      ),
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    final SocketService socketService = context.read();
+    socketService.on("message", (data) => listenMessage(data));
+    super.initState();
+  }
 
   @override
   void dispose() {
-    for (MessageBubble message in _messages) {
-      message.animationController.dispose();
-    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final Responsive r = Responsive.of(context);
+    final SocketService socketService = context.watch();
     final UserModel user =
         ModalRoute.of(context)!.settings.arguments as UserModel;
     return Scaffold(
@@ -73,16 +95,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         child: Column(
           children: [
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.only(
-                  left: r.wp(3),
-                  right: r.wp(3),
-                  bottom: r.hp(1),
+              child: Scrollbar(
+                child: ListView.builder(
+                  padding: EdgeInsets.only(
+                    left: r.wp(3),
+                    right: r.wp(3),
+                    bottom: r.hp(1),
+                  ),
+                  reverse: true,
+                  itemCount: to == user.uid ? _messages.length : 0,
+                  itemBuilder: (context, index) => to == user.uid
+                      ? _messages.reversed.toList()[index]
+                      : SizedBox.fromSize(),
                 ),
-                reverse: true,
-                itemCount: _messages.length,
-                itemBuilder: (context, index) =>
-                    _messages.reversed.toList()[index],
               ),
             ),
             _InputMessage(
@@ -92,14 +117,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 _messages.add(
                   MessageBubble(
                     text: controller.text,
-                    uid: "123",
-                    animationController: AnimationController(
-                      vsync: this,
-                      duration: const Duration(milliseconds: 250),
-                    ),
-                  )..animationController.forward(),
+                    uid: Session.instance.loginResponse.user!.uid,
+                  ),
                 );
                 setState(() {});
+                // mandar mensaje
+                socketService.emit("message", {
+                  "from": Session.instance.loginResponse.user!.uid,
+                  "to": user.uid,
+                  "message": controller.text.trim()
+                });
               },
             ),
           ],

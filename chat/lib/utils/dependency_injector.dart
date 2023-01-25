@@ -1,3 +1,4 @@
+import 'package:chat/controllers/chat.dart';
 import 'package:chat/controllers/login.dart';
 import 'package:chat/controllers/register.dart';
 import 'package:chat/controllers/socket.dart';
@@ -42,6 +43,9 @@ class DependencyInjector {
           userListUseCase: UserListUseCase(
         repository: UserRepository(),
       )),
+    ),
+    ChangeNotifierProvider(
+      create: (_) => ChatController(),
     ),
   ];
 }
