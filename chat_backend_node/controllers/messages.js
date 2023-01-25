@@ -11,8 +11,7 @@ const get_messages = async (req, res) => {
         { from: message_from, to: my_uid },
       ],
     })
-      .sort({ createdAt: "desc" })
-      .limit(30);
+    .limit(30);
 
     return res.json({
       ok: true,
