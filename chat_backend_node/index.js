@@ -9,6 +9,7 @@ import { createServer } from "http";
 import cors from "cors";
 import { validate_token } from "./helpers/jwt.js";
 import handle_online_status_of_user from "./controllers/socket.js";
+import { usersRoutes } from "./routes/users.js";
 dotenv.config();
 
 dbConnection();
@@ -37,6 +38,7 @@ const server = createServer(app);
 
 // Routes
 app.use("/api/login", authRoutes);
+app.use("/api/users", usersRoutes);
 
 //socket conf
 const io = new Server(server);
@@ -52,10 +54,14 @@ io.on("connection", (socket) => {
   }
   console.log("Client Authenticated");
 
-  handle_online_status_of_user(uid, true);
+  handle_online_status_of_user(uid, true).then((value) =>
+    socket.broadcast.emit("user_connect", JSON.stringify(value))
+  );
 
   socket.on("disconnect", () => {
-    handle_online_status_of_user(uid, false);
+    handle_online_status_of_user(uid, false).then((value) =>
+      socket.broadcast.emit("user_connect", JSON.stringify(value))
+    );
     console.log("Disconnected");
   });
 });
