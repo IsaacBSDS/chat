@@ -1,5 +1,11 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
 
+/// TODO: SI NO HAY INTERNET:
+/// DEL LADO QUE ENVIA MENSAJE: GUARDAR LOS MENSAJES EN EL LOCALSTORE PARA POSTERIORMENTE
+/// ENVIARLOS A GUARDAR EN LA BASE DE DATOS.
+///
+/// DEL LADO DEL QUE RECIBE EL MENSAJE: HACER LA PETICIóN AL SERVIDOR UNA VEZ QUE SE RESTAURE LA CONEXIóN
+/// A INTERNET
 import 'dart:developer';
 
 import 'package:chat/controllers/chat.dart';
@@ -11,6 +17,7 @@ import 'package:chat/ui/theme/colors.dart';
 import 'package:chat/ui/widgets/custom_text.dart';
 import 'package:chat/ui/widgets/custom_text_form_field.dart';
 import 'package:chat/ui/widgets/message_bubble.dart';
+import 'package:chat/utils/message_local_storage.dart';
 import 'package:chat/utils/responsive.dart';
 import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final FocusNode focusNode = FocusNode();
 
   final TextEditingController controller = TextEditingController();
+  final MessageLocalStorage messageLocalStorage = MessageLocalStorage();
 
   List<MessageBubble> _messages = [];
   String from = "";
@@ -44,12 +52,33 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
   }
 
+  _loadHistoryFromLocal(String from, BuildContext context) async {
+    final ChatController chatController = context.read();
+    try {
+      final List<Message>? listMessagesFromLocal =
+          await chatController.listAllMessagesFromLocal(from);
+      if (listMessagesFromLocal != null && listMessagesFromLocal.isNotEmpty) {
+        final List<MessageBubble> receivedMessages =
+            listMessagesFromLocal.map((e) {
+          return MessageBubble(text: e.message!, uid: e.from!);
+        }).toList();
+        setState(() {
+          this.from = from;
+          _messages = receivedMessages;
+        });
+      }
+    } on UseCaseException catch (e) {
+      log(e.message.toString());
+    }
+  }
+
   _loadHistory(String from, BuildContext context) async {
     final ChatController chatController = context.read();
     try {
       final List<Message>? listMessages =
           await chatController.listAllMessages(from);
       if (listMessages != null && listMessages.isNotEmpty) {
+        // log("llamando en red");
         final List<MessageBubble> receivedMessages = listMessages.map((e) {
           return MessageBubble(text: e.message!, uid: e.from!);
         }).toList();
@@ -66,10 +95,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     final SocketService socketService = context.read();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       final UserModel user =
           ModalRoute.of(context)!.settings.arguments as UserModel;
-      _loadHistory(user.uid, context);
+
+      await _loadHistoryFromLocal(user.uid, context);
+      await _loadHistory(user.uid, context);
     });
     socketService.on("message", (data) => listenMessage(data));
     super.initState();
@@ -142,7 +173,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             _InputMessage(
               focusNode,
               controller,
-              onChanged: (value) {
+              onSubmit: (value) {
+                final message = {
+                  "from": Session.instance.loginResponse.user!.uid,
+                  "to": user.uid,
+                  "message": controller.text.trim()
+                };
+                messageLocalStorage.saveIndividualMessage(
+                    userUid: user.uid, message: message);
                 _messages.add(
                   MessageBubble(
                     text: controller.text,
@@ -152,11 +190,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 from = user.uid;
                 setState(() {});
                 // mandar mensaje
-                socketService.emit("message", {
-                  "from": Session.instance.loginResponse.user!.uid,
-                  "to": user.uid,
-                  "message": controller.text.trim()
-                });
+                socketService.emit("message", message);
               },
             ),
           ],
@@ -168,11 +202,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
 class _InputMessage extends StatelessWidget {
   const _InputMessage(this.focusNode, this.controller,
-      {required this.onChanged});
+      {required this.onSubmit});
 
   final FocusNode focusNode;
   final TextEditingController controller;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String> onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +246,7 @@ class _InputMessage extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   if (controller.text.trim().isEmpty) return;
-                  onChanged(controller.text);
+                  onSubmit(controller.text);
                   controller.clear();
                 },
                 splashColor: CustomColors.purple,

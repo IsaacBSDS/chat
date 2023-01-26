@@ -25,8 +25,8 @@ class SplashController extends ChangeNotifier {
         return true;
       }
       return false;
-    } catch (e) {
-      log(e.toString());
+    } catch (e, s) {
+      log(e.toString(), stackTrace: s);
       LocalStorage.delete(Constants.token);
       rethrow;
     }

@@ -22,6 +22,11 @@ class MessagesListResponse {
         messages:
             List<Message>.from(json["last_30"].map((x) => Message.fromJson(x))),
       );
+
+  Map<String, dynamic> toJson() => {
+        "ok": ok,
+        "last_30": List<dynamic>.from((messages ?? []).map((x) => x.toJson())),
+      };
 }
 
 class Message {
@@ -61,4 +66,12 @@ class Message {
         createdAt: DateTime.parse(json["createdAt"]),
         updatedAt: DateTime.parse(json["updatedAt"]),
       );
+
+  Map<String, dynamic> toJson() => {
+        "from": from,
+        "to": to,
+        "message": message,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+      };
 }
