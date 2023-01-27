@@ -16,5 +16,6 @@ class Session {
   stop() {
     loginResponse = LoginResponse();
     LocalStorage.delete(Constants.token);
+    LocalStorage.delete(Constants.messages);
   }
 }

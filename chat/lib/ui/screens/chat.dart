@@ -35,11 +35,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   final TextEditingController controller = TextEditingController();
   final MessageLocalStorage messageLocalStorage = MessageLocalStorage();
-
   List<MessageBubble> _messages = [];
   String from = "";
 
   dynamic listenMessage(dynamic data) {
+    messageLocalStorage.saveIndividualMessage(
+      userUid: data["from"],
+      message: data,
+    );
     from = data["from"];
     _messages.add(
       MessageBubble(
