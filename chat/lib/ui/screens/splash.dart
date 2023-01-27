@@ -6,6 +6,7 @@ import 'package:chat/ui/routes/names.dart';
 import 'package:chat/ui/theme/colors.dart';
 import 'package:chat/ui/widgets/custom_text.dart';
 import 'package:chat/utils/responsive.dart';
+import 'package:chat/utils/session.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.of(context)
             .pushNamedAndRemoveUntil(RoutesNames.users, (route) => false);
       } else {
+        Session.instance.stop();
         Future.delayed(
           const Duration(seconds: 2),
           () => Navigator.of(context)

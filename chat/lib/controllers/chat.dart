@@ -18,10 +18,10 @@ class ChatController extends ChangeNotifier {
               params: MessagesUseCaseParams(from: from));
       await messageLocalStorage.saveMessages(
         userUid: from,
-        messages: messagesListResponse.toJson()["last_30"],
+        messages: messagesListResponse.toJson()["messages"],
       );
       if (messagesInLocal != null &&
-          messagesInLocal == messagesListResponse.toJson()["last_30"]) {
+          messagesInLocal == messagesListResponse.toJson()["messages"]) {
         return null;
       }
       return messagesListResponse.messages;
