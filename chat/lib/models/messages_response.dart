@@ -19,13 +19,13 @@ class MessagesListResponse {
   factory MessagesListResponse.fromJson(Map<String, dynamic> json) =>
       MessagesListResponse(
         ok: json["ok"],
-        messages:
-            List<Message>.from(json["last_30"].map((x) => Message.fromJson(x))),
+        messages: List<Message>.from(
+            json["messages"].map((x) => Message.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "ok": ok,
-        "last_30": List<dynamic>.from((messages ?? []).map((x) => x.toJson())),
+        "messages": List<dynamic>.from((messages ?? []).map((x) => x.toJson())),
       };
 }
 
