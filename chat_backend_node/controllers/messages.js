@@ -5,17 +5,15 @@ const get_messages = async (req, res) => {
     const my_uid = req.uid;
     const message_from = req.params.from;
 
-    const last_30 = await Messages.find({
+    const messages = await Messages.find({
       $or: [
         { from: my_uid, to: message_from },
         { from: message_from, to: my_uid },
       ],
-    })
-    .limit(30);
-
+    });
     return res.json({
       ok: true,
-      last_30,
+      messages,
     });
   } catch (error) {
     return res.status(500).json({
